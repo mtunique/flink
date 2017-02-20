@@ -188,6 +188,11 @@ public abstract class StreamTransformation<T> {
 	 */
 	public void setParallelism(int parallelism) {
 		Preconditions.checkArgument(parallelism > 0, "Parallelism must be bigger than zero.");
+
+		Preconditions.checkArgument(getMaxParallelism() < 0 || parallelism <= getMaxParallelism(),
+			"The parallelism must be smaller than the maximum parallelism %d.",
+			getMaxParallelism());
+
 		this.parallelism = parallelism;
 	}
 
@@ -210,6 +215,11 @@ public abstract class StreamTransformation<T> {
 						&& maxParallelism <= StreamGraphGenerator.UPPER_BOUND_MAX_PARALLELISM,
 				"Maximum parallelism must be between 1 and " + StreamGraphGenerator.UPPER_BOUND_MAX_PARALLELISM
 						+ ". Found: " + maxParallelism);
+
+		Preconditions.checkArgument(maxParallelism == -1 || maxParallelism >= getParallelism(),
+			"The maximum parallelism must be bigger than the present parallelism %s.",
+			getParallelism());
+
 		this.maxParallelism = maxParallelism;
 	}
 

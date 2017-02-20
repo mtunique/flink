@@ -178,6 +178,7 @@ public class StreamExecutionEnvironmentTest {
 		Assert.assertEquals(-1, operator.getTransformation().getMaxParallelism());
 
 		// configured value after generating
+		operator.setParallelism(1);
 		env.setMaxParallelism(42);
 		env.getStreamGraph().getJobGraph();
 		Assert.assertEquals(42, operator.getTransformation().getMaxParallelism());
@@ -221,6 +222,23 @@ public class StreamExecutionEnvironmentTest {
 		// override config
 		env.getStreamGraph().getJobGraph();
 		Assert.assertEquals(1 << 15 , operator.getTransformation().getMaxParallelism());
+
+		// set max parallelism but max parallelism smaller than parallelism
+		try {
+			operator.setParallelism(10);
+			operator.setMaxParallelism(1);
+			Assert.fail();
+		} catch (IllegalArgumentException expected) {
+		}
+
+		// set parallelism but parallelism bigger than max parallelism
+		try {
+			operator.setMaxParallelism(1);
+			operator.setParallelism(10);
+			Assert.fail();
+		} catch (IllegalArgumentException expected) {
+		}
+
 	}
 
 	/////////////////////////////////////////////////////////////
